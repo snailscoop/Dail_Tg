@@ -1,0 +1,16 @@
+{
+  "name": "telegram_bot",
+  "version": "1.0.0",
+  "description": "a basic telegram bot to search through availble library with the bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "node-telegram-bot-api": "^0.63.0"
+  },
+  "author": "",
+  "license": "ISC"
+}
