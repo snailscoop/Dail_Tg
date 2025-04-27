@@ -8,7 +8,17 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "dotenv": "^8.2.0",
+    "@verida/account-node": "^4.4.5",
+    "@verida/account-web-vault": "^4.4.5",
+    "@verida/client-ts": "^4.4.5",
+    "@verida/did-client": "^4.4.5",
+    "@verida/storage-link": "^4.4.5",
+    "@verida/vda-name-client": "^4.4.5",
+    "axios": "^1.9.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.6.0",
+    "express": "^5.1.0",
+    "gun": "^0.2020.1240",
     "node-telegram-bot-api": "^0.63.0"
   },
   "author": "",
