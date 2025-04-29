@@ -1,9 +1,7 @@
 /**
- * Hackathon Startup Script
+ * Simplified Hackathon Startup Script
  * 
- * This script starts both the GunDB server and the Telegram bot.
- * It uses child_process to run multiple processes and ensures
- * clean startup with webhook deletion to avoid conflicts.
+ * This script starts both the GunDB server and the unified Telegram bot.
  */
 
 const { spawn } = require('child_process');
@@ -41,14 +39,14 @@ const colors = {
 // Print banner
 console.log(`
 ${colors.cyan}${colors.bright}=================================================
-       CHEQD TELEGRAM BOT HACKATHON STARTER
+         UNIFIED TELEGRAM BOT STARTER
 =================================================
 ${colors.reset}
 
 ${colors.yellow}This script will start the following services:
 ${colors.reset}
 1. ${colors.green}GunDB Server${colors.reset} - For data storage
-2. ${colors.green}Telegram Bot${colors.reset} - The main application
+2. ${colors.green}Telegram Bot${colors.reset} - The unified bot with all features
 
 ${colors.yellow}Press Ctrl+C to stop all services${colors.reset}
 `);
@@ -104,13 +102,13 @@ function startServices() {
   
   // Wait for GunDB server to start before starting Telegram bot
   setTimeout(() => {
-    console.log(`\n${colors.cyan}Starting Telegram Bot...${colors.reset}\n`);
+    console.log(`\n${colors.cyan}Starting Unified Telegram Bot...${colors.reset}\n`);
     
     // Set environment variable to use mock CHEQD for hackathon
     process.env.USE_MOCK_CHEQD = 'true';
     
-    // Start Telegram bot with special polling options to avoid conflicts
-    const telegramBot = spawn('node', ['index-with-cheqd.js']);
+    // Start Telegram bot
+    const telegramBot = spawn('node', ['index.js']);
     
     telegramBot.stdout.on('data', (data) => {
       console.log(`${colors.green}[Bot] ${colors.reset}${data.toString().trim()}`);

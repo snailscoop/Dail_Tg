@@ -1,8 +1,8 @@
 /**
- * Enhanced Telegram Bot with cheqd Moderation System
+ * Unified Telegram Bot with CHEQD Moderation System
  * 
- * This script integrates the existing Dail_Tg bot with the cheqd-powered
- * moderation system for consent-based, verifiable moderation actions.
+ * This script combines the original Dail_Tg bot functionality with
+ * the CHEQD-powered moderation system for consent-based, verifiable moderation.
  */
 
 const TelegramBot = require('node-telegram-bot-api');
@@ -23,7 +23,7 @@ const objects = require('./Dail_Tg/list.js');
 const options = require('./Dail_Tg/options.js');
 const snailsFacts = require('./Dail_Tg/snails.js');
 
-// Import cheqd moderation system
+// Import CHEQD moderation system
 const config = require('./cheqd/config');
 const gundb = require('./storage/gundb');
 const didMapping = require('./telegram/services/didMapping');
@@ -42,11 +42,11 @@ if (!token) {
   throw new Error('BOT_TOKEN is required in environment variables');
 }
 
-// Validate cheqd configuration
+// Validate CHEQD configuration
 config.validateConfig();
 
 // Constants
-const TIMEOUT_DURATION = 15000;
+const TIMEOUT_DURATION = options.behavior.messageLifetime || 15000;
 
 // Initialize the Telegram bot with the token and updated polling settings
 const bot = new TelegramBot(token, {
@@ -66,10 +66,10 @@ bot.deleteWebHook({ drop_pending_updates: true })
     console.log('Webhook deleted successfully, starting polling...');
     // Now start polling after webhook is cleared
     bot.startPolling({
-      interval: 300,
+      interval: options.telegram.polling.interval || 300,
       params: {
-        timeout: 10,
-        allowed_updates: ["message", "callback_query", "inline_query"]
+        timeout: options.telegram.polling.timeout || 10,
+        allowed_updates: options.telegram.polling.allowed_updates || ["message", "callback_query", "inline_query"]
       }
     });
     
@@ -77,9 +77,11 @@ bot.deleteWebHook({ drop_pending_updates: true })
     // Initialize the GunDB peer for the bot
     const gun = gundb.initBotNode();
 
-    // Initialize cheqd services
+    // Initialize CHEQD services
     didMapping.initialize(gun);
     moderationService.initialize(bot, gun);
+
+    console.log('Bot initialized successfully!');
   })
   .catch(error => {
     console.error('Error removing webhook:', error);
@@ -153,17 +155,77 @@ const deleteCommand = async (msg) => {
   }
 };
 
-// Command Handlers
+// =======================================
+// Original Bot Commands and Functionality
+// =======================================
+
+// Handle /start command
+bot.onText(/\/start/, async (msg) => {
+  const chatId = msg.chat.id;
+  const userName = getUserName(msg);
+  
+  await deleteCommand(msg);
+  
+  const welcomeMessage = `Hello ${userName}! ${objects.responses.welcome}`;
+  await bot.sendMessage(chatId, welcomeMessage);
+});
+
+// Handle /info command
+bot.onText(/\/info/, async (msg) => {
+  const chatId = msg.chat.id;
+  
+  await deleteCommand(msg);
+  
+  const infoMessage = `Bot Information:
+Name: ${objects.info.botName}
+Version: ${objects.info.version}
+Description: ${objects.info.description}`;
+  
+  await sendDisappearingMessage(chatId, infoMessage);
+});
+
+// Handle /snailfact command
+bot.onText(/\/snailfact/, async (msg) => {
+  const chatId = msg.chat.id;
+  
+  await deleteCommand(msg);
+  
+  const fact = snailsFacts.getRandomFact();
+  await sendDisappearingMessage(chatId, `🐌 Snail Fact: ${fact}`);
+});
+
+// Handle /search command
+bot.onText(/\/search (.+)/, async (msg, match) => {
+  const chatId = msg.chat.id;
+  const searchTerm = match[1];
+  
+  await deleteCommand(msg);
+  
+  // Simple search functionality - in a real bot this would do actual searching
+  await sendDisappearingMessage(chatId, `Searching for: "${searchTerm}"...`);
+});
+
+// =======================================
+// CHEQD Moderation Commands
+// =======================================
+
+// Command Handlers for CHEQD
 const handleHelp = async (msg) => {
   const chatId = msg.chat.id;
   const userName = getUserName(msg);
 
-  await deleteCommand(msg);  // Delete command immediately
+  await deleteCommand(msg);
 
-  const helpMessage = `Hello ${userName}! Welcome to the CHEQD Moderation Bot!
+  const helpMessage = `Hello ${userName}! Welcome to the Unified Dail_Tg Bot!
 
 Available commands:
 /help - Show this help message
+/start - Start the bot
+/info - Get information about the bot
+/snailfact - Get a random fact about snails
+/search [term] - Search for information
+
+DID Commands:
 /mydid - Get or create your DID (Decentralized Identifier)
 /mycredentials - View your credentials and privileges
 /didhelp - Show help for DID-related commands
@@ -187,18 +249,16 @@ Cross-Chat Ban System:
   await sendDisappearingMessage(chatId, helpMessage);
 };
 
-// Register only the cheqd moderation and DID commands
-// Do not register the original bot commands
-console.log('Registering only cheqd moderation and DID commands...');
+// Register help command
 bot.onText(/\/help/, handleHelp);
 
 // Register moderation command handlers
 moderationCommands.registerModerationCommands(bot);
 didCommands.registerDidCommands(bot);
 
-console.log('Enhanced SNAILS Telegram bot with cheqd moderation system started!');
+console.log('Unified Dail_Tg Telegram bot with CHEQD moderation system started!');
+console.log('Original commands enabled: /start, /info, /snailfact, /search');
 console.log('Moderation commands enabled: /ban, /mute, /makemoderator, /revokemoderator, /trust, /untrust, /banlist, /trustedlist, /deletemedia');
-console.log('DID commands enabled: /mydid, /mycredentials, /didhelp');
 
 // Add callback handler for inline keyboard
 bot.on('callback_query', async (callbackQuery) => {
