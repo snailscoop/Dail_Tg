@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHEQD Telegram Bot - GunDB Server</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            margin-bottom: 20px;
+        }
+        code {
+            background-color: #f1f1f1;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CHEQD Telegram Bot - GunDB Server</h1>
+        
+        <div class="status">
+            <strong>Status:</strong> GunDB server is running
+        </div>
+        
+        <h2>Server Information</h2>
+        <p>This server provides a GunDB peer for the CHEQD Telegram Bot hackathon project.</p>
+        
+        <h2>API Endpoints</h2>
+        <ul>
+            <li><code>/gun</code> - GunDB synchronization endpoint</li>
+            <li><code>/status</code> - Server status endpoint</li>
+        </ul>
+        
+        <h2>Test Connection</h2>
+        <p>You can test the connection to the GunDB server using the following JavaScript code:</p>
+        <pre><code>const gun = Gun('http://localhost:3000/gun');
+const test = gun.get('test');
+test.put({message: 'Hello World'});
+test.on(data => console.log('Data:', data));</code></pre>
+        
+        <p><small>CHEQD Telegram Bot Hackathon Project &copy; 2025</small></p>
+    </div>
+
+    <script src="/gun.js"></script>
+    <script>
+        // Simple connection test
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                const gun = Gun();
+                const status = document.querySelector('.status');
+                status.innerHTML = '<strong>Status:</strong> Connected to GunDB server successfully!';
+            } catch (e) {
+                const status = document.querySelector('.status');
+                status.innerHTML = '<strong>Status:</strong> Failed to connect to GunDB server. ' + e.message;
+                status.style.backgroundColor = '#ffebee';
+                status.style.borderLeftColor = '#f44336';
+            }
+        });
+    </script>
+</body>
+</html> 
